@@ -99,35 +99,28 @@ def main(model_name='my_cifar10_model', model_num=0, training=True):
     model_path = f"{model_name}{model_num}.keras"
 
     modelObj = MyKerasModel(input_shape=X_train.shape[1:], num_classes=class_num)
-    
-    if not training and os.path.exists(model_path):
+
+    if os.path.exists(model_path):
         print(f"Loading existing model from {model_path}")
         modelObj = MyKerasModel.load_model(model_path)
         modelObj.model.summary()
-    elif not training and not os.path.exists(model_path):
-        print(f"Model {model_path} does not exist. Exiting.")
-        return
-    elif os.path.exists(model_path):
-        print(f"Loading existing model from {model_path}")
-        modelObj = MyKerasModel.load_model(model_path)
-        modelObj.model.summary()
-        print("Loaded existing model. Training for 10 more epochs.")
-        # Corrected method call (removed explicit 'self')
     else:
-        print(f"Model {model_path} does not exist. Training new model.")
+        print(f"Model {model_path} does not exist. ")
         modelObj.model.summary()
-        print("Training new model for 50 epochs.")
-        # Adjusted to 50 epochs as you initially mentioned for a new model, if required
-        #modelObj.train(X_train, y_train, epochs=3, batch_size=64, validation_split=0.2)
     
     if training:
-        modelObj.history = modelObj.model.fit(X_train, y_train, epochs=3, batch_size=64, validation_split=0.2)
+        print("Training new model for more epochs.")
+        modelObj.history = modelObj.model.fit(X_train, y_train, epochs=4, batch_size=64, validation_split=0.2)
 
-    # Corrected method call (removed explicit 'self')
-    modelObj.save_model(filepath=f"{model_name}{model_num+1}.keras")
+        # Corrected method call (removed explicit 'self')
+        modelObj.save_model(filepath=f"{model_name}{model_num+1}.keras")
+
+    #print(X_test)
+    #print(y_test)
 
     if modelObj.history:
         pd.DataFrame(modelObj.history.history).plot(figsize=(8, 5))
+        #plt.plot(X_train.shape[1], y_train.shape[1], 'o', label="original value", markersize=3)
         plt.grid(True)
         #plt.gca().set_ylim(0, 2)
         plt.title('Model training history')
@@ -139,4 +132,4 @@ def main(model_name='my_cifar10_model', model_num=0, training=True):
 
 if __name__ == '__main__':
     # model_num=0 for new model
-    main(model_name='my_cifar10_model', model_num=2, training=True)
+    main(model_name='my_cifar10_model', model_num=4, training=False)
